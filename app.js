@@ -3,6 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const Campground = require('./models/trailtalk')
 const methodOverride = require('method-override')
+const ejsmate = require('ejs-mate')
 
 const app = express();
 const port = 3000;
@@ -19,6 +20,7 @@ mongoose.connection.on('error', err => {
 });
 //To handle errors after initial connection was established, you should listen for error events on the connection
 
+app.engine('ejs', ejsmate)
 app.set('view engine', 'ejs'); //The default engine extension to use
 app.set('views', path.join(__dirname, 'views')); //Setting up a directory or an array of directories for the application's views.
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
