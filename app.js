@@ -6,9 +6,14 @@ const ejsmate = require('ejs-mate');
 const session = require('express-session')
 const ExpressError = require('./utilities/ExpressError');
 const flash = require('connect-flash')
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+const User = require('./models/user')
 
-const campgrounds = require('./routes/campgrounds') //requiring the express router
-const reviews = require('./routes/reviews') //requiring the express router
+
+const campgroundRoutes = require('./routes/campgrounds') //requiring the express router
+const reviewRoutes = require('./routes/reviews') //requiring the express router
+const userRoutes = require('./routes/users') //requiring the express router
 
 const app = express();
 const port = 3000;
@@ -46,18 +51,36 @@ const sessionConfig = {
 app.use(session(sessionConfig))
 app.use(flash())
 
+//session is to be used before passport.session
+app.use(passport.initialize())
+app.use(passport.session()) //for persistent login session
+passport.use(new LocalStrategy(User.authenticate())) // use static authenticate method of model in LocalStrategy
+
+passport.serializeUser(User.serializeUser()) //Generates a function that is used by Passport to serialize users into the session
+passport.deserializeUser(User.deserializeUser()) //Generates a function that is used by Passport to deserialize users into the session
+
+//testing passport setup
+// app.get('/testuser', async (req, res) => {
+//     const user = new User({ email: 'nalinn@gmail.com', username: 'nalinn' })
+//     const newUser = await User.register(user, 'password')
+//     res.send(newUser)
+// })
+
 app.listen(port, () => {
     console.log(`TrailTalk is talking on port ${port}`)
 }) //This app starts a server and listens on port 3000 for connections. 
 
 app.use((req, res, next) => {
+    res.locals.currentUser = req.user //req.user is a property that Passport automatically adds to the req (request) object after a user successfully logs in.
     res.locals.success = req.flash('success')
     res.locals.error = req.flash('error')
     next()
 })//add it before the routers so that flash is available 
+//res.locals property is used to set variables accessible in templates rendered with res.render.
 
-app.use('/campgrounds', campgrounds) //using express router
-app.use('/campgrounds/:id/reviews', reviews) //using express router
+app.use('/campgrounds', campgroundRoutes) //using express router
+app.use('/campgrounds/:id/reviews', reviewRoutes) //using express router
+app.use('/', userRoutes) //using express router
 
 app.get('/', (req, res) => {
     res.render('home')

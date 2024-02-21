@@ -8,6 +8,12 @@ const CampgroundSchema = new Schema({
     price: Number,
     description: String,
     location: String,
+    author:
+    {
+        type: Schema.Types.ObjectId,
+        ref: 'User' //model name of the embedded collection
+    }
+    ,
     reviews: [
         {
             type: Schema.Types.ObjectId,
@@ -26,7 +32,7 @@ CampgroundSchema.post('findOneAndDelete', async function (doc) {
             }
         })
     }
-})
+}) //mongoose middleware
 
 
 
