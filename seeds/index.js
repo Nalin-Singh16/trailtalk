@@ -27,10 +27,19 @@ const seedDB = async () => {
         const camp = new Campground({
             location: `${cities[randomNum].city}, ${cities[randomNum].state}`,
             title: `${sample(descriptors)} ${sample(places)}`,
-            image: `https://source.unsplash.com/collection/483251`,
             description: 'This is a random test description that is used while seeding',
             price: 5000,
-            author: '65d62a77cf0249b2bcb73e49'
+            author: '65d62a77cf0249b2bcb73e49',
+            images: [
+                {
+                    url: 'https://res.cloudinary.com/dxizm3ses/image/upload/v1708761238/trailtalk/or2dkqxp7ewpl4zrvdc0.jpg',
+                    filename: 'trailtalk/or2dkqxp7ewpl4zrvdc0'
+                },
+                {
+                    url: 'https://res.cloudinary.com/dxizm3ses/image/upload/v1708761239/trailtalk/gk3kxqjgs9qekjg8h6yn.jpg',
+                    filename: 'trailtalk/gk3kxqjgs9qekjg8h6yn'
+                }
+            ]
         })
 
         await camp.save()
