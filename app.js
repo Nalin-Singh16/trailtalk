@@ -13,7 +13,8 @@ const flash = require('connect-flash')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const User = require('./models/user')
-
+const mongoSanitize = require('express-mongo-sanitize');
+const MongoStore = require('connect-mongo')
 
 const campgroundRoutes = require('./routes/campgrounds') //requiring the express router
 const reviewRoutes = require('./routes/reviews') //requiring the express router
@@ -21,13 +22,15 @@ const userRoutes = require('./routes/users') //requiring the express router
 
 const app = express();
 const port = 3000;
+const dbUrl = process.env.DB_URL
+//'mongodb://127.0.0.1:27017/trailtalk'
 
 main().then(console.log('Database connected'))
     .catch(err => console.log(err));
 //To handle initial connection errors
 
 async function main() {
-    await mongoose.connect('mongodb://127.0.0.1:27017/trailtalk');
+    await mongoose.connect(dbUrl);
 }
 mongoose.connection.on('error', err => {
     logError(err);
@@ -41,13 +44,36 @@ app.set('views', path.join(__dirname, 'views')); //Setting up a directory or an 
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(
+    mongoSanitize({
+        allowDots: true,
+        replaceWith: '_',
+    }),
+);
+
+const secret = process.env.secret
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60, //to avoid updation on every request
+    crypto: {
+        secret
+    }
+});
+
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e)
+})
 
 const sessionConfig = {
-    secret: 'Thisisasecret',
+    store,
+    name: 'session',
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
+        //secure: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }//date.now is in milliseconds
@@ -71,7 +97,7 @@ passport.deserializeUser(User.deserializeUser()) //Generates a function that is 
 // })
 
 app.listen(port, () => {
-    console.log(`TrailTalk is talking on port ${port}`)
+    console.log(`TrailTalk is talking on port`)
 }) //This app starts a server and listens on port 3000 for connections. 
 
 app.use((req, res, next) => {
