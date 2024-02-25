@@ -1,4 +1,8 @@
-const express = require('express');
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config()
+}
+
+express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override')
