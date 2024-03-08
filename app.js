@@ -23,6 +23,7 @@ const userRoutes = require('./routes/users') //requiring the express router
 const app = express();
 const port = 3000;
 const dbUrl = process.env.DB_URL
+//process.env.DB_URL
 //'mongodb://127.0.0.1:27017/trailtalk'
 
 main().then(console.log('Database connected'))
