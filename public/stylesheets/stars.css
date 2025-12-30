@@ -1,14 +1,16 @@
 /* component */
 
 .star-rating {
-    border: solid 1px #ccc;
     display: flex;
     flex-direction: row-reverse;
-    font-size: 1.5em;
-    justify-content: space-around;
-    padding: 0 .2em;
-    text-align: center;
-    width: 5em;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.75rem;
+    padding: 0;
+    width: auto;
+    border: none;
+    background: transparent;
 }
 
 .star-rating input {
@@ -16,8 +18,9 @@
 }
 
 .star-rating label {
-    color: #ccc;
+    color: #d1d7e6;
     cursor: pointer;
+    transition: color 160ms ease, transform 160ms ease;
 }
 
 .star-rating :checked~label {
@@ -26,18 +29,13 @@
 
 .star-rating label:hover,
 .star-rating label:hover~label {
-    color: #fc0;
+    color: #fbbf24;
+}
+
+.star-rating input:focus+label {
+    outline: 2px solid rgba(56, 189, 248, 0.55);
+    outline-offset: 4px;
+    border-radius: 6px;
 }
 
 /* explanation */
-
-article {
-    background-color: #ffe;
-    box-shadow: 0 0 1em 1px rgba(0, 0, 0, .25);
-    color: #006;
-    font-family: cursive;
-    font-style: italic;
-    margin: 4em;
-    max-width: 30em;
-    padding: 2em;
-}

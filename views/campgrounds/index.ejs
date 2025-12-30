@@ -1,32 +1,58 @@
 <% layout('layouts/boilerplate') %>
-    <h1>All campgrounds</h1>
-    <header class="p-2">
-        <a class="btn btn-info btn-lg" href="/campgrounds/new" role="button">Add New Campsite</a>
-    </header>
-    <% for (let campground of campgrounds){%>
-        <div class="card mb-3">
-            <div class="row">
-                <div class="col-md-4" style="height: 350px; overflow: hidden;">
-                    <img class="img-fluid" alt="" src="<%=campground.images[0].url%>"
-                        style="max-height: 100%; object-fit: cover; object-position: center;">
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <%= campground.title %>
-                        </h5>
-                        <p class="card-text">
-                            <%= campground.description %>
-                        </p>
-                        <p class="card-text">
-                            <small class="text-muted">
-                                <%= campground.location%>
-                            </small>
-                        </p>
-                        <a class="btn btn-primary" href="/campgrounds/<%=campground._id%>">View <%=campground.title%>
-                        </a>
-                    </div>
-                </div>
+    <section class="campgrounds-hero mb-5">
+        <div class="hero-content">
+            <span class="badge">Discover Trails</span>
+            <h1 class="display-5 fw-bold mb-2">All Campgrounds</h1>
+            <p class="lead">Explore curated campsites with breathtaking views, curated amenities, and stories from fellow
+                adventurers.</p>
+            <div>
+                <a class="btn btn-light btn-lg px-4 py-3 fw-semibold" href="/campgrounds/new" role="button">
+                    <i class="bi bi-plus-circle me-2"></i>Add New Campsite
+                </a>
             </div>
         </div>
-        <% }%>
+    </section>
+
+    <% if(!campgrounds.length) { %>
+        <div class="camp-empty-state d-flex flex-column align-items-center justify-content-center">
+            <h2 class="fw-bold mb-3">No campgrounds yet</h2>
+            <p class="mb-0">Be the first to share your trail tales and help other explorers discover new escapes.</p>
+            <a class="btn btn-primary btn-lg mt-4" href="/campgrounds/new">
+                <i class="bi bi-plus-circle me-2"></i>Add your first campsite
+            </a>
+        </div>
+        <% } else { %>
+            <div class="campgrounds-grid">
+                <% campgrounds.forEach(campground => { %>
+                    <% const coverImage = campground.images?.[0]?.url; %>
+                    <article class="camp-card card h-100">
+                        <div class="ratio ratio-16x9">
+                            <% if(coverImage) { %>
+                                <img src="<%= coverImage %>" alt="<%= campground.title %> cover image"
+                                    onerror="this.style.display='none'">
+                                <% } else { %>
+                                    <div class="img-placeholder">No Image</div>
+                                    <% } %>
+                        </div>
+                        <div class="card-body">
+                            <div class="camp-meta">
+                                <span class="badge bg-light text-dark"><i class="bi bi-geo-alt-fill me-1"></i>
+                                    <%= campground.location %>
+                                </span>
+                                <% if (campground.price) { %>
+                                    <span class="badge bg-primary-subtle text-primary fw-semibold">₹<%= campground.price %>
+                                        / night</span>
+                                    <% } %>
+                            </div>
+                            <h3 class="h5 fw-bold mb-1"><%= campground.title %></h3>
+                            <p class="camp-description mb-0"><%= campground.description %></p>
+                        </div>
+                        <div class="card-footer border-0 bg-transparent">
+                            <a class="btn btn-outline-primary w-100" href="/campgrounds/<%= campground._id %>">
+                                View details
+                            </a>
+                        </div>
+                    </article>
+                    <% }) %>
+            </div>
+            <% } %>
